@@ -122,10 +122,46 @@ namespace Arbitrary.Test
 
             Assert.IsInstanceOfType(ret, typeof(Test2));
         }
+
+        [TestMethod]
+        public void ResolveCorrectlyResolvesAndInjectsGreedily()
+        {
+            var container = new ArbitraryContainer();
+
+            container
+                .Register<ITest, Test1>()
+                .Register<ITestB, TestB1>();
+
+            var ret = container.Resolve<ConstructorsTest>();
+
+            Assert.IsInstanceOfType(ret.Test, typeof(Test1));
+            Assert.IsInstanceOfType(ret.TestB, typeof(TestB1));
+        }
     }
 
     // Fixtures
     interface ITest { }
     class Test1 : ITest { }
     class Test2 : ITest { }
+
+    interface ITestB { }
+    class TestB1 : ITestB { }
+
+    class ConstructorsTest
+    {
+        public ConstructorsTest()
+            : this(null, null) { }
+
+        public ConstructorsTest(ITest test)
+            : this(test, null) { }
+
+        public ConstructorsTest(ITest test, ITestB testb)
+        {
+            Test = test;
+            TestB = testb;
+        }
+
+        public ITest Test { get; private set; }
+        public ITestB TestB { get; private set; }
+    }
 }
