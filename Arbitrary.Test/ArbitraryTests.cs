@@ -77,25 +77,20 @@ namespace Arbitrary.Test
         }
 
         [TestMethod]
+        [ExpectedException(typeof(NoConstructorException))]
         public void DoesNotResolveInterfaceIfUnknown()
         {
             var container = new ArbitraryContainer();
-
-            TestHelpers.AssertThrows<NoConstructorException>(() =>
-                {
-                    container.Resolve<ITest>();
-                });
+            container.Resolve<ITest>();
         }
 
         [TestMethod]
+        [ExpectedException(typeof(NoConstructorException))]
         public void RegistrationThrowsWhenUnknownWithKey()
         {
             var container = new ArbitraryContainer();
 
-            TestHelpers.AssertThrows<NoConstructorException>(() =>
-            {
-                container.Resolve<ITest>("key1");
-            });
+            container.Resolve<ITest>("key1");
         }
 
         [TestMethod]
