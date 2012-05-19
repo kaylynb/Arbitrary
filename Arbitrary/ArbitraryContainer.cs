@@ -12,20 +12,20 @@ namespace Arbitrary
         public ArbitraryContainer Register<TInterface, TInstance>(string key = null)
             where TInstance : TInterface
         {
-            _types[typeof(TInterface)] = typeof(TInstance);
+            _types[Tuple.Create<Type, string>(typeof(TInterface), key)] = typeof(TInstance);
             return this;
         }
 
-        public T Resolve<T>()
+        public T Resolve<T>(string key = null)
         {
             Type t;
-            if (!_types.TryGetValue(typeof(T), out t))
+            if (!_types.TryGetValue(Tuple.Create<Type, string>(typeof(T), key), out t))
                 return (T)Create(typeof(T));
 
             return (T)Create(t);
         }
 
-        private readonly Dictionary<Type, Type> _types = new Dictionary<Type,Type>();
+        private readonly Dictionary<Tuple<Type, string>, Type> _types = new Dictionary<Tuple<Type, string>, Type>();
 
         private object Create(Type type)
         {
