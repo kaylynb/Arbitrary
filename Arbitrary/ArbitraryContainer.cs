@@ -15,7 +15,7 @@ namespace Arbitrary
         public ArbitraryContainer Register<TInterface, TInstance>(string key = null, ILifetime lifetime = null)
             where TInstance : TInterface
         {
-            return Register(typeof (TInterface), typeof (TInstance), key, lifetime);
+            return Register(typeof(TInterface), typeof(TInstance), key, lifetime);
         }
 
         public ArbitraryContainer Register<TInterface>(TInterface instance, string key = null)
@@ -23,9 +23,10 @@ namespace Arbitrary
             return Register(typeof(TInterface), typeof(TInterface), key, new SingletonLifetime(instance));
         }
 
-        public ArbitraryContainer Register(Type interfaceType, Type instanceType, string key = null, ILifetime lifetime = null)
+        public ArbitraryContainer Register(Type interfaceType, Type instanceType, string key = null,
+                                           ILifetime lifetime = null)
         {
-            if(lifetime == null)
+            if (lifetime == null)
                 lifetime = new InstanceLifetime();
 
             lifetime.Register(() => Create(instanceType));
@@ -36,7 +37,7 @@ namespace Arbitrary
 
         public T Resolve<T>(string key = null)
         {
-            return (T) Resolve(typeof (T), key);
+            return (T) Resolve(typeof(T), key);
         }
 
         public object Resolve(Type requestedType, string key = null)
@@ -52,7 +53,8 @@ namespace Arbitrary
             return lifetime.Resolve();
         }
 
-        private readonly Dictionary<Tuple<Type, string>, ILifetime> _types = new Dictionary<Tuple<Type, string>, ILifetime>();
+        private readonly Dictionary<Tuple<Type, string>, ILifetime> _types =
+            new Dictionary<Tuple<Type, string>, ILifetime>();
 
         private void InjectProperties(object obj)
         {
@@ -69,7 +71,7 @@ namespace Arbitrary
                     resolution.Item1.SetValue(obj, resolution.Item2);
                 }
             }
-            catch(ResolveException exception)
+            catch (ResolveException exception)
             {
                 throw new InjectionException("Could not inject properties for : " + obj.GetType().FullName, exception);
             }
@@ -90,15 +92,13 @@ namespace Arbitrary
             {
                 obj = constructor.Invoke(
                     constructor.GetParameters()
-                    .Select(parameterInfo => Resolve(parameterInfo.ParameterType))
-                    .ToArray());
+                        .Select(parameterInfo => Resolve(parameterInfo.ParameterType))
+                        .ToArray());
 
-                if(obj == null)
+                if (obj == null)
                     throw new Exception();
-
-
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 throw new ResolveException("Could not resolve: " + type.FullName, exception);
             }

@@ -32,7 +32,7 @@ namespace Arbitrary.Test
             container.Register<ITest, Test1>();
             var ret = container.Resolve<ITest>();
 
-            Assert.IsInstanceOfType(ret, typeof (Test1));
+            Assert.IsInstanceOfType(ret, typeof(Test1));
         }
 
         [TestMethod]
@@ -43,7 +43,7 @@ namespace Arbitrary.Test
 
             var ret = container.Resolve<ITest>();
 
-            Assert.IsInstanceOfType(ret, typeof (Test2));
+            Assert.IsInstanceOfType(ret, typeof(Test2));
         }
 
         [TestMethod]
@@ -61,7 +61,7 @@ namespace Arbitrary.Test
         {
             var ret = container.Resolve<Test1>();
 
-            Assert.IsInstanceOfType(ret, typeof (Test1));
+            Assert.IsInstanceOfType(ret, typeof(Test1));
         }
 
         [TestMethod]
@@ -69,18 +69,18 @@ namespace Arbitrary.Test
         {
             var ret = container.Resolve<Test1>("key1");
 
-            Assert.IsInstanceOfType(ret, typeof (Test1));
+            Assert.IsInstanceOfType(ret, typeof(Test1));
         }
 
         [TestMethod]
-        [ExpectedException(typeof (NoConstructorException))]
+        [ExpectedException(typeof(NoConstructorException))]
         public void DoesNotResolveInterfaceIfUnknown()
         {
             container.Resolve<ITest>();
         }
 
         [TestMethod]
-        [ExpectedException(typeof (NoConstructorException))]
+        [ExpectedException(typeof(NoConstructorException))]
         public void RegistrationThrowsWhenUnknownWithKey()
         {
             container.Resolve<ITest>("key1");
@@ -96,8 +96,8 @@ namespace Arbitrary.Test
             var retTest1 = container.Resolve<ITest>();
             var retTest2 = container.Resolve<ITest>("key1");
 
-            Assert.IsInstanceOfType(retTest1, typeof (Test1));
-            Assert.IsInstanceOfType(retTest2, typeof (Test2));
+            Assert.IsInstanceOfType(retTest1, typeof(Test1));
+            Assert.IsInstanceOfType(retTest2, typeof(Test2));
         }
 
         [TestMethod]
@@ -109,7 +109,7 @@ namespace Arbitrary.Test
 
             var ret = container.Resolve<ITest>("key1");
 
-            Assert.IsInstanceOfType(ret, typeof (Test2));
+            Assert.IsInstanceOfType(ret, typeof(Test2));
         }
 
         [TestMethod]
@@ -121,12 +121,12 @@ namespace Arbitrary.Test
 
             var ret = container.Resolve<ConstructorsTest>();
 
-            Assert.IsInstanceOfType(ret.Test, typeof (Test1));
-            Assert.IsInstanceOfType(ret.TestB, typeof (TestB1));
+            Assert.IsInstanceOfType(ret.Test, typeof(Test1));
+            Assert.IsInstanceOfType(ret.TestB, typeof(TestB1));
         }
 
         [TestMethod]
-        [ExpectedException(typeof (ResolveException))]
+        [ExpectedException(typeof(ResolveException))]
         public void ResolveThrowsWhenCannotResolve()
         {
             container.Register<ITest, Test1>();
@@ -141,7 +141,7 @@ namespace Arbitrary.Test
 
             var ret = container.Resolve<InjectionTest>();
 
-            Assert.IsInstanceOfType(ret.Test, typeof (Test1));
+            Assert.IsInstanceOfType(ret.Test, typeof(Test1));
         }
 
         [TestMethod]
@@ -284,7 +284,7 @@ namespace Arbitrary.Test
         {
             container.Register<ITest, Test1>(lifetime: new SingletonLifetime(new TestB1()));
 
-            var ret = container.Resolve(typeof (ITest));
+            var ret = container.Resolve(typeof(ITest));
 
             Assert.IsNotInstanceOfType(ret, typeof(Test1));
             Assert.IsInstanceOfType(ret, typeof(TestB1));
@@ -306,23 +306,23 @@ namespace Arbitrary.Test
             var ret = container.Resolve<ComplicatedInjection>();
 
             Assert.IsInstanceOfType(ret.constructedTest1, typeof(Test1));
-            
+
             Assert.IsInstanceOfType(ret.constructedTestInterface, typeof(Test2));
-           
+
             Assert.IsInstanceOfType(ret.constructedConstructorsTest, typeof(ConstructorsTest));
             Assert.IsInstanceOfType(ret.constructedConstructorsTest.Test, typeof(Test3));
             Assert.IsInstanceOfType(ret.constructedConstructorsTest.TestB, typeof(TestB1));
             Assert.AreSame(ret.constructedConstructorsTest, ret.ConstructorsTestInjection);
-           
+
             Assert.IsInstanceOfType(ret.constructedTwoKeyedInjection, typeof(FirstKeyedInjectionTest));
             Assert.IsInstanceOfType(ret.constructedTwoKeyedInjection.Test, typeof(Test1));
-            
+
             Assert.IsInstanceOfType(ret.FirstTestProperty, typeof(Test2));
             Assert.IsInstanceOfType(ret.SecondTestProperty, typeof(Test2));
             Assert.AreNotSame(ret.FirstTestProperty, ret.SecondTestProperty);
 
             Assert.IsInstanceOfType(ret.KeyedProperty, typeof(Test3));
-            
+
             Assert.IsInstanceOfType(ret.TwoKeyedInjection, typeof(FirstKeyedInjectionTest));
             Assert.AreNotSame(ret.constructedTwoKeyedInjection.Test, ret.TwoKeyedInjection);
 
@@ -332,21 +332,41 @@ namespace Arbitrary.Test
     }
 
     // Fixtures
-    interface ITest { }
-    class Test1 : ITest { }
-    class Test2 : ITest { }
-    class Test3 : ITest { }
+    internal interface ITest
+    {
+    }
 
-    interface ITestB { }
-    class TestB1 : ITestB { }
+    internal class Test1 : ITest
+    {
+    }
 
-    class ConstructorsTest
+    internal class Test2 : ITest
+    {
+    }
+
+    internal class Test3 : ITest
+    {
+    }
+
+    internal interface ITestB
+    {
+    }
+
+    internal class TestB1 : ITestB
+    {
+    }
+
+    internal class ConstructorsTest
     {
         public ConstructorsTest()
-            : this(null, null) { }
+            : this(null, null)
+        {
+        }
 
         public ConstructorsTest(ITest test)
-            : this(test, null) { }
+            : this(test, null)
+        {
+        }
 
         public ConstructorsTest(ITest test, ITestB testb)
         {
@@ -358,18 +378,18 @@ namespace Arbitrary.Test
         public ITestB TestB { get; private set; }
     }
 
-    class InjectionTest
+    internal class InjectionTest
     {
         [Inject]
         public ITest Test { get; set; }
     }
 
-    class NonInjectionTest
+    internal class NonInjectionTest
     {
         public ITest Test { get; set; }
     }
 
-    class InjectionTestWithKey
+    internal class InjectionTestWithKey
     {
         [Inject("key1")]
         public ITest Test { get; set; }
@@ -378,43 +398,45 @@ namespace Arbitrary.Test
         public ITest Test2 { get; set; }
     }
 
-    class InjectionTestTypes
+    internal class InjectionTestTypes
     {
         [Inject]
         public Test1 Test { get; set; }
     }
 
-    class InjectionTestTypesWithKey
+    internal class InjectionTestTypesWithKey
     {
         [Inject("key1")]
         public Test1 Test { get; set; }
     }
 
-    interface ITwoKeyedInjectionTests
+    internal interface ITwoKeyedInjectionTests
     {
         ITest Test { get; set; }
     }
 
-    class FirstKeyedInjectionTest : ITwoKeyedInjectionTests
+    internal class FirstKeyedInjectionTest : ITwoKeyedInjectionTests
     {
         [Inject("key1")]
         public ITest Test { get; set; }
     }
 
-    class SecondKeyedInjectionTest : ITwoKeyedInjectionTests
+    internal class SecondKeyedInjectionTest : ITwoKeyedInjectionTests
     {
         [Inject("key2")]
         public ITest Test { get; set; }
     }
 
     // Complicated fixtures
-    class ComplicatedInjection
+    internal class ComplicatedInjection
     {
         public Test1 constructedTest1;
         public ITest constructedTestInterface;
         public ConstructorsTest constructedConstructorsTest;
         public ITwoKeyedInjectionTests constructedTwoKeyedInjection;
-        public ComplicatedInjection(Test1 test1, ITest testInterface, ConstructorsTest constructorsTest, ITwoKeyedInjectionTests twoKeyedInjection)
+
+        public ComplicatedInjection(Test1 test1, ITest testInterface, ConstructorsTest constructorsTest,
+                                    ITwoKeyedInjectionTests twoKeyedInjection)
         {
             constructedTest1 = test1;
             constructedTestInterface = testInterface;
