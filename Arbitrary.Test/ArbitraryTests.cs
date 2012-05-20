@@ -289,12 +289,53 @@ namespace Arbitrary.Test
             Assert.IsNotInstanceOfType(ret, typeof(Test1));
             Assert.IsInstanceOfType(ret, typeof(TestB1));
         }
+
+        [TestMethod]
+        public void ComplexResolution()
+        {
+            container
+                .Register<ITest, Test3>()
+                .Register<ITestB, TestB1>()
+                .Register<ConstructorsTest>(lifetime: new SingletonLifetime())
+                .Register<ITest, Test2>()
+                .Register<ITwoKeyedInjectionTests, FirstKeyedInjectionTest>()
+                .Register<ITest, Test3>("KeyedProperty")
+                .Register<ITest, Test1>("key1")
+                .Register<ITest, Test2>("key2");
+
+            var ret = container.Resolve<ComplicatedInjection>();
+
+            Assert.IsInstanceOfType(ret.constructedTest1, typeof(Test1));
+            
+            Assert.IsInstanceOfType(ret.constructedTestInterface, typeof(Test2));
+           
+            Assert.IsInstanceOfType(ret.constructedConstructorsTest, typeof(ConstructorsTest));
+            Assert.IsInstanceOfType(ret.constructedConstructorsTest.Test, typeof(Test3));
+            Assert.IsInstanceOfType(ret.constructedConstructorsTest.TestB, typeof(TestB1));
+            Assert.AreSame(ret.constructedConstructorsTest, ret.ConstructorsTestInjection);
+           
+            Assert.IsInstanceOfType(ret.constructedTwoKeyedInjection, typeof(FirstKeyedInjectionTest));
+            Assert.IsInstanceOfType(ret.constructedTwoKeyedInjection.Test, typeof(Test1));
+            
+            Assert.IsInstanceOfType(ret.FirstTestProperty, typeof(Test2));
+            Assert.IsInstanceOfType(ret.SecondTestProperty, typeof(Test2));
+            Assert.AreNotSame(ret.FirstTestProperty, ret.SecondTestProperty);
+
+            Assert.IsInstanceOfType(ret.KeyedProperty, typeof(Test3));
+            
+            Assert.IsInstanceOfType(ret.TwoKeyedInjection, typeof(FirstKeyedInjectionTest));
+            Assert.AreNotSame(ret.constructedTwoKeyedInjection.Test, ret.TwoKeyedInjection);
+
+            Assert.IsInstanceOfType(ret.SecondKeyedInjection, typeof(SecondKeyedInjectionTest));
+            Assert.IsInstanceOfType(ret.SecondKeyedInjection.Test, typeof(Test2));
+        }
     }
 
     // Fixtures
     interface ITest { }
     class Test1 : ITest { }
     class Test2 : ITest { }
+    class Test3 : ITest { }
 
     interface ITestB { }
     class TestB1 : ITestB { }
@@ -391,9 +432,12 @@ namespace Arbitrary.Test
         public ITest KeyedProperty { get; set; }
 
         [Inject]
-        public ITwoKeyedInjectionTests TwoKeyendInjection { get; set; }
+        public ITwoKeyedInjectionTests TwoKeyedInjection { get; set; }
 
         [Inject]
         public SecondKeyedInjectionTest SecondKeyedInjection { get; set; }
+
+        [Inject]
+        public ConstructorsTest ConstructorsTestInjection { get; set; }
     }
 }

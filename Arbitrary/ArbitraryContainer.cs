@@ -7,6 +7,11 @@ namespace Arbitrary
 {
     public class ArbitraryContainer
     {
+        public ArbitraryContainer Register<TInterface>(string key = null, ILifetime lifetime = null)
+        {
+            return Register<TInterface, TInterface>(key, lifetime);
+        }
+
         public ArbitraryContainer Register<TInterface, TInstance>(string key = null, ILifetime lifetime = null)
             where TInstance : TInterface
         {
