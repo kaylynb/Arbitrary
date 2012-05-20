@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 namespace Arbitrary
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class Inject : Attribute
+    public sealed class InjectAttribute : Attribute
     {
         public string Key = null;
 
-        public Inject(string key = null)
+        public InjectAttribute(string key = null)
         {
             this.Key = key;
         }

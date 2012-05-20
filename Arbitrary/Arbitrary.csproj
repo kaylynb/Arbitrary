@@ -23,6 +23,8 @@
     <DefineConstants>DEBUG;TRACE;NETFX_CORE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -109,7 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArbitraryContainer.cs" />
-    <Compile Include="Inject.cs" />
+    <Compile Include="InjectAttribute.cs" />
     <Compile Include="InjectionException.cs" />
     <Compile Include="NoConstructorException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

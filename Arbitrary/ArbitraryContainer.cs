@@ -37,7 +37,7 @@ namespace Arbitrary
             {
                 foreach (var resolution in
                     from propertyInfo in obj.GetType().GetTypeInfo().DeclaredProperties
-                    let injectionAttribute = propertyInfo.GetCustomAttribute<Inject>()
+                    let injectionAttribute = propertyInfo.GetCustomAttribute<InjectAttribute>()
                     where injectionAttribute != null
                     select
                         new Tuple<PropertyInfo, object>(propertyInfo,
@@ -71,7 +71,7 @@ namespace Arbitrary
             }
             catch(Exception exception)
             {
-                throw new ResolveException("Cound not resolve: " + type.FullName, exception);
+                throw new ResolveException("Could not resolve: " + type.FullName, exception);
             }
         }
     }

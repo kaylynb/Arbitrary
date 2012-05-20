@@ -5,9 +5,9 @@ namespace Arbitrary
     public class NoConstructorException : ResolveException
     {
         public NoConstructorException() { }
-        public NoConstructorException(string msg)
-            : base(msg) { }
-        public NoConstructorException(string msg, Exception inner)
-            : base(msg, inner) { }
+        public NoConstructorException(string message)
+            : base(message) { }
+        public NoConstructorException(string message, Exception inner)
+            : base(message, inner) { }
     }
 }

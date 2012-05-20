@@ -5,9 +5,9 @@ namespace Arbitrary
     public class ResolveException : Exception
     {
         public ResolveException() { }
-        public ResolveException(string msg)
-            : base(msg) { }
-        public ResolveException(string msg, Exception inner)
-            : base(msg, inner) { }
+        public ResolveException(string message)
+            : base(message) { }
+        public ResolveException(string message, Exception inner)
+            : base(message, inner) { }
     }
 }

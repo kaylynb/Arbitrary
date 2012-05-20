@@ -9,9 +9,9 @@ namespace Arbitrary
     public class InjectionException : ResolveException
     {
         public InjectionException() { }
-        public InjectionException(string msg)
-            : base(msg) { }
-        public InjectionException(string msg, Exception inner)
-            : base(msg, inner) { }
+        public InjectionException(string message)
+            : base(message) { }
+        public InjectionException(string message, Exception inner)
+            : base(message, inner) { }
     }
 }
