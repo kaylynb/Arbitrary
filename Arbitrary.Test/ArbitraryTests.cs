@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Arbitrary.Test
 {
@@ -6,6 +7,7 @@ namespace Arbitrary.Test
     public class ArbitraryTests
     {
         private ArbitraryContainer container;
+
         [TestInitialize]
         public void Initialize()
         {
@@ -30,7 +32,7 @@ namespace Arbitrary.Test
             container.Register<ITest, Test1>();
             var ret = container.Resolve<ITest>();
 
-            Assert.IsInstanceOfType(ret, typeof(Test1));
+            Assert.IsInstanceOfType(ret, typeof (Test1));
         }
 
         [TestMethod]
@@ -41,7 +43,7 @@ namespace Arbitrary.Test
 
             var ret = container.Resolve<ITest>();
 
-            Assert.IsInstanceOfType(ret, typeof(Test2));
+            Assert.IsInstanceOfType(ret, typeof (Test2));
         }
 
         [TestMethod]
@@ -59,7 +61,7 @@ namespace Arbitrary.Test
         {
             var ret = container.Resolve<Test1>();
 
-            Assert.IsInstanceOfType(ret, typeof(Test1));
+            Assert.IsInstanceOfType(ret, typeof (Test1));
         }
 
         [TestMethod]
@@ -67,18 +69,18 @@ namespace Arbitrary.Test
         {
             var ret = container.Resolve<Test1>("key1");
 
-            Assert.IsInstanceOfType(ret, typeof(Test1));
+            Assert.IsInstanceOfType(ret, typeof (Test1));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NoConstructorException))]
+        [ExpectedException(typeof (NoConstructorException))]
         public void DoesNotResolveInterfaceIfUnknown()
         {
             container.Resolve<ITest>();
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NoConstructorException))]
+        [ExpectedException(typeof (NoConstructorException))]
         public void RegistrationThrowsWhenUnknownWithKey()
         {
             container.Resolve<ITest>("key1");
@@ -94,8 +96,8 @@ namespace Arbitrary.Test
             var retTest1 = container.Resolve<ITest>();
             var retTest2 = container.Resolve<ITest>("key1");
 
-            Assert.IsInstanceOfType(retTest1, typeof(Test1));
-            Assert.IsInstanceOfType(retTest2, typeof(Test2));
+            Assert.IsInstanceOfType(retTest1, typeof (Test1));
+            Assert.IsInstanceOfType(retTest2, typeof (Test2));
         }
 
         [TestMethod]
@@ -107,7 +109,7 @@ namespace Arbitrary.Test
 
             var ret = container.Resolve<ITest>("key1");
 
-            Assert.IsInstanceOfType(ret, typeof(Test2));
+            Assert.IsInstanceOfType(ret, typeof (Test2));
         }
 
         [TestMethod]
@@ -119,12 +121,12 @@ namespace Arbitrary.Test
 
             var ret = container.Resolve<ConstructorsTest>();
 
-            Assert.IsInstanceOfType(ret.Test, typeof(Test1));
-            Assert.IsInstanceOfType(ret.TestB, typeof(TestB1));
+            Assert.IsInstanceOfType(ret.Test, typeof (Test1));
+            Assert.IsInstanceOfType(ret.TestB, typeof (TestB1));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ResolveException))]
+        [ExpectedException(typeof (ResolveException))]
         public void ResolveThrowsWhenCannotResolve()
         {
             container.Register<ITest, Test1>();
@@ -139,7 +141,17 @@ namespace Arbitrary.Test
 
             var ret = container.Resolve<InjectionTest>();
 
-            Assert.IsInstanceOfType(ret.Test, typeof(Test1));
+            Assert.IsInstanceOfType(ret.Test, typeof (Test1));
+        }
+
+        [TestMethod]
+        public void DoesNotResolveUnmarkedProperties()
+        {
+            container.Register<ITest, Test1>();
+
+            var ret = container.Resolve<NonInjectionTest>();
+
+            Assert.IsNull(ret.Test);
         }
 
         [TestMethod]
@@ -197,6 +209,86 @@ namespace Arbitrary.Test
 
             Assert.AreSame(test1, ret);
         }
+
+        [TestMethod]
+        public void CheckDifferentInstantiations()
+        {
+            container.Register<ITest, Test1>();
+
+            var ret1 = container.Resolve<ITest>();
+            var ret2 = container.Resolve<ITest>();
+
+            Assert.AreNotSame(ret1, ret2);
+        }
+
+        [TestMethod]
+        public void CheckSameInstantiationsWithSingleton()
+        {
+            container.Register<ITest, Test1>(lifetime: new SingletonLifetime());
+
+            var ret1 = container.Resolve<ITest>();
+            var ret2 = container.Resolve<ITest>();
+
+            Assert.AreSame(ret1, ret2);
+        }
+
+        [TestMethod]
+        public void TestInjectionInstantationsWithSingleton()
+        {
+            container.Register<ITest, Test1>(lifetime: new SingletonLifetime());
+
+            var ret1 = container.Resolve<InjectionTest>();
+            var ret2 = container.Resolve<InjectionTest>();
+
+            Assert.AreNotSame(ret1, ret2);
+            Assert.AreSame(ret1.Test, ret2.Test);
+        }
+
+        [TestMethod]
+        public void TestRegistrationWithDifferentLifetimesAndKeys()
+        {
+            container.Register<ITest, Test1>();
+            container.Register<ITest, Test2>("Singleton", new SingletonLifetime());
+
+            var ret1 = container.Resolve<ITest>();
+            var ret2 = container.Resolve<ITest>();
+
+            Assert.AreNotSame(ret1, ret2);
+
+            ret1 = container.Resolve<ITest>("Singleton");
+            ret2 = container.Resolve<ITest>("Singleton");
+
+            Assert.AreSame(ret1, ret2);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidCastException))]
+        public void InvalidCastWhenSettingSingleton()
+        {
+            container.Register<ITest, Test1>(lifetime: new SingletonLifetime(new TestB1()));
+
+            var ret = container.Resolve<ITest>();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidCastException))]
+        public void InvalidCastWhenNotUsingImpliedType()
+        {
+            container.Register<ITest, Test1>(lifetime: new SingletonLifetime(new TestB1()));
+
+            ITest ret = container.Resolve<ITest>();
+        }
+
+        [TestMethod]
+        public void AWayToShootYourselfInTheFootSoUseSpecificConstructorsWhenPossible()
+        {
+            container.Register<ITest, Test1>(lifetime: new SingletonLifetime(new TestB1()));
+
+            var ret = container.Resolve(typeof (ITest));
+
+            Assert.IsNotInstanceOfType(ret, typeof(Test1));
+            Assert.IsInstanceOfType(ret, typeof(TestB1));
+        }
     }
 
     // Fixtures
@@ -231,6 +323,11 @@ namespace Arbitrary.Test
         public ITest Test { get; set; }
     }
 
+    class NonInjectionTest
+    {
+        public ITest Test { get; set; }
+    }
+
     class InjectionTestWithKey
     {
         [Inject("key1")]
@@ -250,5 +347,53 @@ namespace Arbitrary.Test
     {
         [Inject("key1")]
         public Test1 Test { get; set; }
+    }
+
+    interface ITwoKeyedInjectionTests
+    {
+        ITest Test { get; set; }
+    }
+
+    class FirstKeyedInjectionTest : ITwoKeyedInjectionTests
+    {
+        [Inject("key1")]
+        public ITest Test { get; set; }
+    }
+
+    class SecondKeyedInjectionTest : ITwoKeyedInjectionTests
+    {
+        [Inject("key2")]
+        public ITest Test { get; set; }
+    }
+
+    // Complicated fixtures
+    class ComplicatedInjection
+    {
+        public Test1 constructedTest1;
+        public ITest constructedTestInterface;
+        public ConstructorsTest constructedConstructorsTest;
+        public ITwoKeyedInjectionTests constructedTwoKeyedInjection;
+        public ComplicatedInjection(Test1 test1, ITest testInterface, ConstructorsTest constructorsTest, ITwoKeyedInjectionTests twoKeyedInjection)
+        {
+            constructedTest1 = test1;
+            constructedTestInterface = testInterface;
+            constructedConstructorsTest = constructorsTest;
+            constructedTwoKeyedInjection = twoKeyedInjection;
+        }
+
+        [Inject]
+        public ITest FirstTestProperty { get; set; }
+
+        [Inject]
+        public ITest SecondTestProperty { get; set; }
+
+        [Inject("KeyedProperty")]
+        public ITest KeyedProperty { get; set; }
+
+        [Inject]
+        public ITwoKeyedInjectionTests TwoKeyendInjection { get; set; }
+
+        [Inject]
+        public SecondKeyedInjectionTest SecondKeyedInjection { get; set; }
     }
 }
