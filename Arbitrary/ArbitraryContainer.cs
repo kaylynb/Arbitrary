@@ -33,13 +33,22 @@ namespace Arbitrary
 
         private void InjectProperties(object obj)
         {
-            foreach (var resolution in
+            try
+            {
+                foreach (var resolution in
                     from propertyInfo in obj.GetType().GetTypeInfo().DeclaredProperties
                     let injectionAttribute = propertyInfo.GetCustomAttribute<Inject>()
                     where injectionAttribute != null
-                    select new Tuple<PropertyInfo, object>(propertyInfo, Resolve(propertyInfo.PropertyType, injectionAttribute.Key)))
+                    select
+                        new Tuple<PropertyInfo, object>(propertyInfo,
+                                                        Resolve(propertyInfo.PropertyType, injectionAttribute.Key)))
+                {
+                    resolution.Item1.SetValue(obj, resolution.Item2);
+                }
+            }
+            catch(ResolveException exception)
             {
-                resolution.Item1.SetValue(obj, resolution.Item2);
+                throw new InjectionException("Could not inject properties for : " + obj.GetType().FullName, exception);
             }
         }
 

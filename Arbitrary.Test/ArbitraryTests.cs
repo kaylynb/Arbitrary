@@ -5,25 +5,28 @@ namespace Arbitrary.Test
     [TestClass]
     public class ArbitraryTests
     {
+        private ArbitraryContainer container;
+        [TestInitialize]
+        public void Initialize()
+        {
+            container = new ArbitraryContainer();
+        }
+
         [TestMethod]
         public void RegistrationDoesNotThrow()
         {
-            var container = new ArbitraryContainer();
             container.Register<ITest, Test1>();
         }
 
         [TestMethod]
         public void RegisterWithKeyDoesNotThrow()
         {
-            var container = new ArbitraryContainer();
-
             container.Register<ITest, Test1>("key1");
         }
 
         [TestMethod]
         public void ResolveDoesNotThrowAndIsCorrect()
         {
-            var container = new ArbitraryContainer();
             container.Register<ITest, Test1>();
             var ret = container.Resolve<ITest>();
 
@@ -33,7 +36,6 @@ namespace Arbitrary.Test
         [TestMethod]
         public void RegistrationOverwritesType()
         {
-            var container = new ArbitraryContainer();
             container.Register<ITest, Test1>();
             container.Register<ITest, Test2>();
 
@@ -45,7 +47,6 @@ namespace Arbitrary.Test
         [TestMethod]
         public void RegistrationReturnsSameType()
         {
-            var container = new ArbitraryContainer();
             var ret = container
                 .Register<ITest, Test1>()
                 .Register<ITest, Test2>();
@@ -56,7 +57,6 @@ namespace Arbitrary.Test
         [TestMethod]
         public void ResolvesUnknownTypeIfInstantiable()
         {
-            var container = new ArbitraryContainer();
             var ret = container.Resolve<Test1>();
 
             Assert.IsInstanceOfType(ret, typeof(Test1));
@@ -65,7 +65,6 @@ namespace Arbitrary.Test
         [TestMethod]
         public void ResolvesUnknownTypeIfInstantiableWithKey()
         {
-            var container = new ArbitraryContainer();
             var ret = container.Resolve<Test1>("key1");
 
             Assert.IsInstanceOfType(ret, typeof(Test1));
@@ -75,7 +74,6 @@ namespace Arbitrary.Test
         [ExpectedException(typeof(NoConstructorException))]
         public void DoesNotResolveInterfaceIfUnknown()
         {
-            var container = new ArbitraryContainer();
             container.Resolve<ITest>();
         }
 
@@ -83,16 +81,12 @@ namespace Arbitrary.Test
         [ExpectedException(typeof(NoConstructorException))]
         public void RegistrationThrowsWhenUnknownWithKey()
         {
-            var container = new ArbitraryContainer();
-
             container.Resolve<ITest>("key1");
         }
 
         [TestMethod]
         public void RegistrationWithKeyCorrectlyDifferentiates()
         {
-            var container = new ArbitraryContainer();
-
             container
                 .Register<ITest, Test1>()
                 .Register<ITest, Test2>("key1");
@@ -107,8 +101,6 @@ namespace Arbitrary.Test
         [TestMethod]
         public void RegistrationCorrectlyOverwritesKeys()
         {
-            var container = new ArbitraryContainer();
-
             container
                 .Register<ITest, Test1>("key1")
                 .Register<ITest, Test2>("key1");
@@ -121,8 +113,6 @@ namespace Arbitrary.Test
         [TestMethod]
         public void ResolveCorrectlyResolvesAndInjectsGreedily()
         {
-            var container = new ArbitraryContainer();
-
             container
                 .Register<ITest, Test1>()
                 .Register<ITestB, TestB1>();
@@ -137,8 +127,6 @@ namespace Arbitrary.Test
         [ExpectedException(typeof(ResolveException))]
         public void ResolveThrowsWhenCannotResolve()
         {
-            var container = new ArbitraryContainer();
-
             container.Register<ITest, Test1>();
 
             container.Resolve<ConstructorsTest>();
@@ -147,8 +135,6 @@ namespace Arbitrary.Test
         [TestMethod]
         public void ResolvesBasicInjections()
         {
-            var container = new ArbitraryContainer();
-
             container.Register<ITest, Test1>();
 
             var ret = container.Resolve<InjectionTest>();
@@ -159,8 +145,6 @@ namespace Arbitrary.Test
         [TestMethod]
         public void ResolvesInjectionsWithKeys()
         {
-            var container = new ArbitraryContainer();
-
             container
                 .Register<ITest, Test1>("key1")
                 .Register<ITest, Test2>("key2");
@@ -169,6 +153,37 @@ namespace Arbitrary.Test
 
             Assert.IsInstanceOfType(ret.Test, typeof(Test1));
             Assert.IsInstanceOfType(ret.Test2, typeof(Test2));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InjectionException))]
+        public void ThrowsOnMissingInjections()
+        {
+            container.Resolve<InjectionTestWithKey>();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InjectionException))]
+        public void ThrowsOnMissingInjectionsWithKey()
+        {
+            container.Register<ITest, Test1>("key1");
+
+            container.Resolve<InjectionTestWithKey>();
+        }
+
+        [TestMethod]
+        public void CorrectlyInjectsConcreteTypes()
+        {
+            var ret = container.Resolve<InjectionTestTypes>();
+
+            Assert.IsInstanceOfType(ret.Test, typeof(Test1));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InjectionException))]
+        public void ThrowsExceptionWhenInjectingConcreteWithKey()
+        {
+            container.Resolve<InjectionTestTypesWithKey>();
         }
     }
 
@@ -211,5 +226,17 @@ namespace Arbitrary.Test
 
         [Inject(Key = "key2")]
         public ITest Test2 { get; set; }
+    }
+
+    class InjectionTestTypes
+    {
+        [Inject]
+        public Test1 Test { get; set; }
+    }
+
+    class InjectionTestTypesWithKey
+    {
+        [Inject("key1")]
+        public Test1 Test { get; set; }
     }
 }
