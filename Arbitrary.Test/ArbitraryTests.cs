@@ -180,10 +180,11 @@ namespace Arbitrary.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InjectionException))]
-        public void ThrowsExceptionWhenInjectingConcreteWithKey()
+        public void CorrectlyInjectsConcreteTypesEvenIfKeyDoesNotExist()
         {
-            container.Resolve<InjectionTestTypesWithKey>();
+            var ret = container.Resolve<InjectionTestTypesWithKey>();
+
+            Assert.IsInstanceOfType(ret.Test, typeof(Test1));
         }
     }
 
