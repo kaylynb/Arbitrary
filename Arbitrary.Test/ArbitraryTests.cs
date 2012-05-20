@@ -132,6 +132,17 @@ namespace Arbitrary.Test
             Assert.IsInstanceOfType(ret.Test, typeof(Test1));
             Assert.IsInstanceOfType(ret.TestB, typeof(TestB1));
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ResolveException))]
+        public void ResolveThrowsWhenCannotResolve()
+        {
+            var container = new ArbitraryContainer();
+
+            container.Register<ITest, Test1>();
+
+            var ret = container.Resolve<ConstructorsTest>();
+        }
     }
 
     // Fixtures

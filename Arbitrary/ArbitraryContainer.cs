@@ -40,10 +40,17 @@ namespace Arbitrary
             if (constructor == null)
                 throw new NoConstructorException("No constructor for type: " + type.FullName);
 
-            return constructor.Invoke(
-                constructor.GetParameters()
-                .Select(parameterInfo => Resolve(parameterInfo.ParameterType))
-                .ToArray());
+            try
+            {
+                return constructor.Invoke(
+                    constructor.GetParameters()
+                    .Select(parameterInfo => Resolve(parameterInfo.ParameterType))
+                    .ToArray());
+            }
+            catch(Exception exception)
+            {
+                throw new ResolveException("Cound not resolve: " + type.FullName, exception);
+            }
         }
     }
 }
