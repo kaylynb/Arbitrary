@@ -186,6 +186,17 @@ namespace Arbitrary.Test
 
             Assert.IsInstanceOfType(ret.Test, typeof(Test1));
         }
+
+        [TestMethod]
+        public void RegisterInstanceOfObject()
+        {
+            var test1 = new Test1();
+            container.Register<ITest>(test1);
+
+            var ret = container.Resolve<ITest>();
+
+            Assert.AreSame(test1, ret);
+        }
     }
 
     // Fixtures

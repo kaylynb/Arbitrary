@@ -7,10 +7,25 @@ namespace Arbitrary
 {
     public class ArbitraryContainer
     {
-        public ArbitraryContainer Register<TInterface, TInstance>(string key = null)
+        public ArbitraryContainer Register<TInterface, TInstance>(string key = null, ILifetime lifetime = null)
             where TInstance : TInterface
         {
-            _types[Tuple.Create(typeof(TInterface), key)] = typeof(TInstance);
+            return Register(typeof (TInterface), typeof (TInstance), key, lifetime);
+        }
+
+        public ArbitraryContainer Register<TInterface>(TInterface instance, string key = null)
+        {
+            return Register(typeof(TInterface), typeof(TInterface), key, new SingletonLifetime(instance));
+        }
+
+        public ArbitraryContainer Register(Type interfaceType, Type instanceType, string key = null, ILifetime lifetime = null)
+        {
+            if(lifetime == null)
+                lifetime = new InstanceLifetime();
+
+            lifetime.Register(() => Create(instanceType));
+            _types[Tuple.Create(interfaceType, key)] = lifetime;
+
             return this;
         }
 
@@ -21,15 +36,18 @@ namespace Arbitrary
 
         public object Resolve(Type requestedType, string key = null)
         {
-            Type t;
-            object createdObject = Create(!_types.TryGetValue(Tuple.Create(requestedType, key), out t) ? requestedType : t);
+            ILifetime lifetime;
+            _types.TryGetValue(Tuple.Create(requestedType, key), out lifetime);
+            if (lifetime == null)
+            {
+                lifetime = new InstanceLifetime();
+                lifetime.Register(() => Create(requestedType));
+            }
 
-            InjectProperties(createdObject);
-
-            return createdObject;
+            return lifetime.Resolve();
         }
 
-        private readonly Dictionary<Tuple<Type, string>, Type> _types = new Dictionary<Tuple<Type, string>, Type>();
+        private readonly Dictionary<Tuple<Type, string>, ILifetime> _types = new Dictionary<Tuple<Type, string>, ILifetime>();
 
         private void InjectProperties(object obj)
         {
@@ -62,17 +80,27 @@ namespace Arbitrary
             if (constructor == null)
                 throw new NoConstructorException("No constructor for type: " + type.FullName);
 
+            object obj;
             try
             {
-                return constructor.Invoke(
+                obj = constructor.Invoke(
                     constructor.GetParameters()
                     .Select(parameterInfo => Resolve(parameterInfo.ParameterType))
                     .ToArray());
+
+                if(obj == null)
+                    throw new Exception();
+
+
             }
             catch(Exception exception)
             {
                 throw new ResolveException("Could not resolve: " + type.FullName, exception);
             }
+
+            InjectProperties(obj);
+
+            return obj;
         }
     }
 }
