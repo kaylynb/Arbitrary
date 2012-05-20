@@ -132,6 +132,44 @@ namespace Arbitrary.Test
             Assert.IsInstanceOfType(ret.Test, typeof(Test1));
             Assert.IsInstanceOfType(ret.TestB, typeof(TestB1));
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ResolveException))]
+        public void ResolveThrowsWhenCannotResolve()
+        {
+            var container = new ArbitraryContainer();
+
+            container.Register<ITest, Test1>();
+
+            container.Resolve<ConstructorsTest>();
+        }
+
+        [TestMethod]
+        public void ResolvesBasicInjections()
+        {
+            var container = new ArbitraryContainer();
+
+            container.Register<ITest, Test1>();
+
+            var ret = container.Resolve<InjectionTest>();
+
+            Assert.IsInstanceOfType(ret.Test, typeof(Test1));
+        }
+
+        [TestMethod]
+        public void ResolvesInjectionsWithKeys()
+        {
+            var container = new ArbitraryContainer();
+
+            container
+                .Register<ITest, Test1>("key1")
+                .Register<ITest, Test2>("key2");
+
+            var ret = container.Resolve<InjectionTestWithKey>();
+
+            Assert.IsInstanceOfType(ret.Test, typeof(Test1));
+            Assert.IsInstanceOfType(ret.Test2, typeof(Test2));
+        }
     }
 
     // Fixtures
@@ -158,5 +196,20 @@ namespace Arbitrary.Test
 
         public ITest Test { get; private set; }
         public ITestB TestB { get; private set; }
+    }
+
+    class InjectionTest
+    {
+        [Inject]
+        public ITest Test { get; set; }
+    }
+
+    class InjectionTestWithKey
+    {
+        [Inject("key1")]
+        public ITest Test { get; set; }
+
+        [Inject(Key = "key2")]
+        public ITest Test2 { get; set; }
     }
 }
