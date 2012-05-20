@@ -141,6 +141,7 @@ namespace Arbitrary.Test
 
             container.Register<ITest, Test1>();
 
+<<<<<<< HEAD
             container.Resolve<ConstructorsTest>();
         }
 
@@ -169,6 +170,9 @@ namespace Arbitrary.Test
 
             Assert.IsInstanceOfType(ret.Test, typeof(Test1));
             Assert.IsInstanceOfType(ret.Test2, typeof(Test2));
+=======
+            var ret = container.Resolve<ConstructorsTest>();
+>>>>>>> cae2b1bfca2a44865f3af3d717aff231ad3b6110
         }
     }
 
