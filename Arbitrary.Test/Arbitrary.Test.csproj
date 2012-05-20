@@ -138,9 +138,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Arbitrary.Test_TemporaryKey.pfx" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Arbitrary\Arbitrary.csproj">
       <Project>{89b712bc-fa32-4e6b-8184-be91c0a3ebe1}</Project>
       <Name>Arbitrary</Name>
