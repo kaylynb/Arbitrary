@@ -296,7 +296,7 @@ namespace Arbitrary.Test
             container
                 .Register<ITest, Test3>()
                 .Register<ITestB, TestB1>()
-                .Register<ConstructorsTest>(lifetime: new SingletonLifetime())
+                .Register<ConstructorsTest, ConstructorsTest>(lifetime: new SingletonLifetime())
                 .Register<ITest, Test2>()
                 .Register<ITwoKeyedInjectionTests, FirstKeyedInjectionTest>()
                 .Register<ITest, Test3>("KeyedProperty")
