@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Arbitrary.Test
 {
@@ -73,17 +73,15 @@ namespace Arbitrary.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NoConstructorException))]
         public void DoesNotResolveInterfaceIfUnknown()
-        {
-            container.Resolve<ITest>();
+        {           
+            Assert.ThrowsException<NoConstructorException>(() => container.Resolve<ITest>());
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NoConstructorException))]
         public void RegistrationThrowsWhenUnknownWithKey()
         {
-            container.Resolve<ITest>("key1");
+            Assert.ThrowsException<NoConstructorException>(() => container.Resolve<ITest>("key1"));
         }
 
         [TestMethod]
@@ -126,12 +124,10 @@ namespace Arbitrary.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ResolveException))]
         public void ResolveThrowsWhenCannotResolve()
         {
             container.Register<ITest, Test1>();
-
-            container.Resolve<ConstructorsTest>();
+            Assert.ThrowsException<NoConstructorException>(() => container.Resolve<ConstructorsTest>());
         }
 
         [TestMethod]
@@ -168,19 +164,17 @@ namespace Arbitrary.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InjectionException))]
         public void ThrowsOnMissingInjections()
         {
-            container.Resolve<InjectionTestWithKey>();
+            Assert.ThrowsException<InjectionException>(() => container.Resolve<InjectionTestWithKey>());
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InjectionException))]
         public void ThrowsOnMissingInjectionsWithKey()
         {
             container.Register<ITest, Test1>("key1");
 
-            container.Resolve<InjectionTestWithKey>();
+            Assert.ThrowsException<InjectionException>(() => container.Resolve<InjectionTestWithKey>());
         }
 
         [TestMethod]
@@ -262,21 +256,19 @@ namespace Arbitrary.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidCastException))]
         public void InvalidCastWhenSettingSingleton()
         {
             container.Register<ITest, Test1>(lifetime: new SingletonLifetime(new TestB1()));
 
-            var ret = container.Resolve<ITest>();
+            Assert.ThrowsException<InvalidCastException>(() => container.Resolve<ITest>());
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidCastException))]
         public void InvalidCastWhenNotUsingImpliedType()
         {
             container.Register<ITest, Test1>(lifetime: new SingletonLifetime(new TestB1()));
 
-            ITest ret = container.Resolve<ITest>();
+            Assert.ThrowsException<InvalidCastException>(() => container.Resolve<ITest>());
         }
 
         [TestMethod]

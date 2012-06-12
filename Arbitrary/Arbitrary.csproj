@@ -111,6 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArbitraryContainer.cs" />
+    <Compile Include="ConstructorInvocationException.cs" />
     <Compile Include="ILifetime.cs" />
     <Compile Include="InjectAttribute.cs" />
     <Compile Include="InjectionException.cs" />

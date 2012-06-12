@@ -82,22 +82,14 @@ namespace Arbitrary
             if (constructor == null)
                 throw new NoConstructorException("No constructor for type: " + type.FullName);
 
-            object obj;
-            try
-            {
-                obj = constructor.Invoke(
-                    constructor.GetParameters()
-                        .Select(parameterInfo => Resolve(parameterInfo.ParameterType))
-                        .ToArray());
+            object obj = constructor.Invoke(
+                constructor.GetParameters()
+                    .Select(parameterInfo => Resolve(parameterInfo.ParameterType))
+                    .ToArray());
 
-                if (obj == null)
-                    throw new Exception();
-            }
-            catch (Exception exception)
-            {
-                throw new ResolveException("Could not resolve: " + type.FullName, exception);
-            }
-
+            if (obj == null)
+                throw new ConstructorInvocationException("Could not invoke constructor for type: " + type.FullName);
+      
             InjectProperties(obj);
 
             return obj;
