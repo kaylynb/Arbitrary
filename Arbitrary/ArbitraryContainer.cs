@@ -23,6 +23,11 @@ namespace Arbitrary
             return Register(typeof(TInterface), typeof(TInstance), key, lifetime);
         }
 
+        public ArbitraryContainer Register<TInterface>(string key = null, ILifetime lifetime = null)
+        {
+            return Register(typeof (TInterface), typeof (TInterface), key, lifetime);
+        }
+
         public ArbitraryContainer Register<TInterface>(TInterface instance, string key = null)
         {
             return Register(typeof(TInterface), typeof(TInterface), key, new SingletonLifetime(instance));
