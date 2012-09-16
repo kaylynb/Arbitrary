@@ -7,6 +7,16 @@ namespace Arbitrary
 {
     public class ArbitraryContainer
     {
+        private static ArbitraryContainer _default;
+
+        public static ArbitraryContainer Default
+        {
+            get
+            {
+                return _default ?? (_default = new ArbitraryContainer());
+            }
+        }
+
         public ArbitraryContainer Register<TInterface, TInstance>(string key = null, ILifetime lifetime = null)
             where TInstance : TInterface
         {
