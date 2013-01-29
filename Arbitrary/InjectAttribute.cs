@@ -9,7 +9,7 @@ namespace Arbitrary
 
         public InjectAttribute(string key = null)
         {
-            this.Key = key;
+            Key = key;
         }
     }
 }
