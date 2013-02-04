@@ -15,7 +15,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>Arbitrary.Test_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>B5EAAFA4603AE773939AA242139BC677044517B8</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>41ACAB9649EE5F78FD0B9CAD56FA7883025A8067</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

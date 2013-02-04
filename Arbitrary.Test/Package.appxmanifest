@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="6921ccb9-76d9-4ed4-9af7-b5dc1c0c3de9" Publisher="CN=bogle_000" Version="1.0.0.0" />
+  <Identity Name="6921ccb9-76d9-4ed4-9af7-b5dc1c0c3de9" Publisher="CN=Kaylyn" Version="1.0.0.0" />
   <Properties>
     <DisplayName>Arbitrary.Test</DisplayName>
     <PublisherDisplayName>bog.000</PublisherDisplayName>
